@@ -160,6 +160,12 @@ class TimerSkill(MycroftSkill):
         # cancel intent, since there are no timers to cancel yet!
         self.schedule_repeating_event(self.update_display,
                                       None, 1, name='ShowTimer')
+        
+        # construct an entity file from the preset timers
+        presets = self.settings
+        f = open(join(self.vocab_dir, 'presets.entity'), 'w')
+        f.write('\n'.join(LISTOFPRESETS))
+        self.register_entity_file('presets.entity')
 
     def _extract_duration(self, text):
         # return the duration in seconds
@@ -528,7 +534,11 @@ class TimerSkill(MycroftSkill):
         if self._is_playing_beep():
             self.beep_process.kill()
             self.beep_process = None
-
-
+            
+     # Handles starting a preset timer
+    @intent_file_handler('start.preset.timer.intent')
+    def handle_start_preset_timer(self, message):
+        intent = message.data
+            
 def create_skill():
     return TimerSkill()

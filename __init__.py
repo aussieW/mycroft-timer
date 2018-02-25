@@ -19,7 +19,7 @@ from mycroft.skills.core import (
     MycroftSkill,
     intent_handler,
     intent_file_handler)
-from mycroft.util.log import LOG
+from mycroft.util.log import getLogger
 from datetime import datetime, timedelta
 from os.path import join, isfile, abspath, dirname
 from mycroft.util import play_wav
@@ -76,6 +76,8 @@ from mycroft.skills.skill_data import to_letters
 # FAILS:
 #  set a 1 and a half minute timer
 #  set a timer for 3 hours 45 minutes
+
+LOGGER = getLogger(__name__)
 
 # TODO: Temporary while EnclosureAPI.eyes_fill() gets implemented
 def enclosure_eyes_fill(percentage):

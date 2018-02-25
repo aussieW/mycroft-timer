@@ -224,6 +224,9 @@ class TimerSkill(MycroftSkill):
                  "index": self.timer_index,
                  "duration": secs,
                  "expires": time_expires}
+        # add stage for multipart timers
+        if "stage" in message.data:
+            timer["stage" = message.date["stage"]
         self.active_timers.append(timer)
 
         self.speak_dialog("started.timer",
@@ -556,14 +559,9 @@ class TimerSkill(MycroftSkill):
             duration = 0  
             # Call start timer twice
             for timer in preset_timer:
-                t  = timer.split(':')
-                stage_name = t[0]
-                duration += int(t[1])
+                (stage_name, duration) = timer.split(':')
                 LOGGER.info('timer: ' + str(duration))
-#                message = '{"type": "' + message.type + '", "duration": "' + duration + ' seconds", "utterance": "start an egg timer for 60 seconds"}' 
-#                self.emitter.emit(Message('speak', data='{"duration": "' + duration + ' seconds", "utterance": "start an egg timer for 60 seconds"}'))
-                message = Message(str(message.type), {u"duration": str(duration), u"name": preset_name + ", stage " + stage_name, u"utterance": "timer for " + str(duration) + " seconds called " + stage_name})
-#                message = Message(str(message.type), {"duration": duration + " seconds", "utterance": "start a " + name + " timer for 60 seconds"})
+                message = Message(str(message.type), {u"duration": str(duration), u"name": preset_name, u"stage:" stage_name})
                 LOGGER.info('starting multipart timer')
                 self.handle_start_timer(message)
         else:

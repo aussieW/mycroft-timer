@@ -561,7 +561,7 @@ class TimerSkill(MycroftSkill):
             for timer in preset_timer:
                 (stage_name, duration) = timer.split(':')
                 LOGGER.info('timer: ' + str(duration))
-                message = Message(str(message.type), {u"duration": str(duration), u"name": preset_name, u"stage:" stage_name})
+                message = Message(str(message.type), {u"duration": str(duration), u"name": preset_name, u"stage": stage_name})
                 LOGGER.info('starting multipart timer')
                 self.handle_start_timer(message)
         else:

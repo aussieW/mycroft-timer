@@ -160,6 +160,17 @@ class TimerSkill(MycroftSkill):
         # cancel intent, since there are no timers to cancel yet!
         self.schedule_repeating_event(self.update_display,
                                       None, 1, name='ShowTimer')
+        
+        # construct an entity file from the preset timers
+        preset_settings = self.settings
+        LOGGER.info('preset: ' + str(preset_settings))
+        presets = []
+        for p in preset_settings:
+            if p[:2] != '__':
+                presets.append(p)
+        f = open(join(self.vocab_dir, 'presets.entity'), 'w')
+        f.write('\n'.join(presets))
+        self.register_entity_file('presets.entity')
 
     def _extract_duration(self, text):
         # return the duration in seconds
@@ -180,6 +191,8 @@ class TimerSkill(MycroftSkill):
     # TODO: Doesn't handle 'start 1 and a half minute timer'
     @intent_file_handler('start.timer.intent')
     def handle_start_timer(self, message):
+        LOGGER.info('message type: ' + str(message.type))
+        LOGGER.info('message data: ' + str(message.data))
         # Extract the requested timer duration
         if 'duration' not in message.data:
             secs = self._extract_duration(message.data["utterance"])
@@ -528,7 +541,34 @@ class TimerSkill(MycroftSkill):
         if self._is_playing_beep():
             self.beep_process.kill()
             self.beep_process = None
-
-
+            
+     # Handles starting a preset timer
+    @intent_file_handler('start.preset.timer.intent')
+    def handle_start_preset_timer(self, message):
+        intent = message.data
+        preset_name = intent['preset']
+        LOGGER.info('intent: ' + str(intent))
+        preset_timer = self.settings[preset_name]
+        # check if it is a multipart timer
+        if type(preset_timer) == list:
+            duration = 0  
+            # Call start timer twice
+            for timer in preset_timer:
+                t  = timer.split(':')
+                stage_name = t[0]
+                duration += int(t[1])
+                LOGGER.info('timer: ' + str(duration))
+#                message = '{"type": "' + message.type + '", "duration": "' + duration + ' seconds", "utterance": "start an egg timer for 60 seconds"}' 
+#                self.emitter.emit(Message('speak', data='{"duration": "' + duration + ' seconds", "utterance": "start an egg timer for 60 seconds"}'))
+                message = Message(str(message.type), {u"duration": str(duration), u"name": preset_name + ", stage " + stage_name, u"utterance": "timer for " + str(duration) + " seconds called " + stage_name})
+#                message = Message(str(message.type), {"duration": duration + " seconds", "utterance": "start a " + name + " timer for 60 seconds"})
+                LOGGER.info('starting multipart timer')
+                self.handle_start_timer(message)
+        else:
+            duration = self.settings[preset_name]
+            message = Message(str(message.type), {u"duration": str(duration), u"name": preset_name})
+            LOGGER.info('starting single part timer')
+            self.handle_start_timer(message)
+            
 def create_skill():
     return TimerSkill()

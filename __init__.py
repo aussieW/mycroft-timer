@@ -381,7 +381,12 @@ class TimerSkill(MycroftSkill):
         if not self.active_timers:
             self.speak_dialog("no.active.timer")
         elif len(self.active_timers) == 1:
-            self._speak_timer_status(self.active_timers[0]["name"])
+            # add the stage if it is a multiplart timer
+            try:
+                stage_name = self.active_timers[0]["stage"]
+                self._speak_timer_status(self.active_timers[0]["name"], stage_name)
+            except:
+                self._speak_timer_status(self.active_timers[0]["name"])
         else:
             self._multiple_timer_status(intent)
 
@@ -455,7 +460,7 @@ class TimerSkill(MycroftSkill):
         # NOTE: This allows 'ShowTimer' to continue running, it will clean up
         #       after itself nicely.
 
-    def _speak_timer_status(self, timer_name):
+    def _speak_timer_status(self, timer_name, stage_name=None):
         # Look for "All"
         all_words = self.translate_list('all')
         if (timer_name and any(i.strip() in timer_name for i in all_words)):
@@ -476,8 +481,15 @@ class TimerSkill(MycroftSkill):
             if not name:
                 name = nice_duration(timer["duration"])
             remaining = (timer["expires"] - now).seconds
-
-            self.speak_dialog("time.remaining",
+            
+            # if is is a multipart timer, also speak the stage name
+            try:
+                stage_name = timer["stage"]
+                self.speak_dialog("mulipart/time.remaining",
+                              data={"name": name, "stage": stage_name,
+                                    "remaining": nice_duration(remaining)})
+            except:
+                self.speak_dialog("time.remaining",
                               data={"name": name,
                                     "remaining": nice_duration(remaining)})
 

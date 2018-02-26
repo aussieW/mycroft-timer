@@ -421,9 +421,9 @@ class TimerSkill(MycroftSkill):
         if num_timers == 0:
             self.speak_dialog("no.active.timer")
             return
-        if 'presets' in intent:
-            LOGGER.info('presets included')
         intent = message.data
+        if 'presets' in intent: # Remove after testing!!!!!!!!
+            LOGGER.info('presets included')
         if 'All' in intent:
             self.speak_dialog('cancel.all')
             # get duplicate so we can walk the list

@@ -415,13 +415,14 @@ class TimerSkill(MycroftSkill):
         self.mute = True
 
     @intent_handler(IntentBuilder("").require("Cancel").require("Timer").
-                    optionally("All"))
+                    optionally("All").optionally("presets"))
     def handle_cancel_timer(self, message):
         num_timers = len(self.active_timers)
         if num_timers == 0:
             self.speak_dialog("no.active.timer")
             return
-
+        if 'presets' in intent:
+            LOGGER.info('presets included')
         intent = message.data
         if 'All' in intent:
             self.speak_dialog('cancel.all')

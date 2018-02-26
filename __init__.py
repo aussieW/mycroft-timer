@@ -226,11 +226,15 @@ class TimerSkill(MycroftSkill):
                  "expires": time_expires}
         # add stage for multipart timers
         if "stage" in message.data:
-            timer["stage"] = message.data["stage"]
-        self.active_timers.append(timer)
-
-        self.speak_dialog("started.timer",
+            stage_name = message.data["stage"]
+            timer["stage"] = stage_name
+            self.speak_dialog("started.multipart.timer",
+                          data={"name": timer_name, "stage_name": stage_name, "duration": nice_duration(timer["duration"])})
+        else:
+            self.speak_dialog("started.timer",
                           data={"duration": nice_duration(timer["duration"])})
+            
+        self.active_timers.append(timer)
 
         self.hack_enable_intent("handle_cancel_timer")
         self.hack_enable_intent("handle_mute_timer")

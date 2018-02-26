@@ -485,7 +485,7 @@ class TimerSkill(MycroftSkill):
             # if is is a multipart timer, also speak the stage name
             try:
                 stage_name = timer["stage"]
-                self.speak_dialog("mulipart/time.remaining",
+                self.speak_dialog("multipart.time.remaining",
                               data={"name": name, "stage": stage_name,
                                     "remaining": nice_duration(remaining)})
             except:

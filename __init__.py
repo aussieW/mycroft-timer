@@ -570,7 +570,11 @@ class TimerSkill(MycroftSkill):
         intent = message.data
         preset_name = intent['preset']
         LOGGER.info('intent: ' + str(intent))
-        preset_timer = self.settings[preset_name]
+        try:  # try to retrieve preset settings, if preset doesn't exist notify the user
+            preset_timer = self.settings[preset_name]
+        except:  # TODO: at this point the user could be asked if they wish to create a preset.
+            self.speak("Sorry, there is no preset timer named " + preset_name)
+            return
         # check if it is a multipart timer
         if type(preset_timer) == list:
             duration = 0  

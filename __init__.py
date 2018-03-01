@@ -277,21 +277,21 @@ class TimerSkill(MycroftSkill):
 
     def _get_timer(self, name, stage=None):
         # Retrieve the timer referenced by name
-		# Go through a hierarchy of methods until a match is found
-		
-		# Referenced by name and optionally by stage
-		# Note that a preset timer might have multiple stages, so it only a name
-		#  is provided, multiple timers may be returned.
-		timers = []
-		for timer in self.active_timers:
-			if stage:
-				if timer["name"] == name and timer["stage"] == stage:
-					return [timer]
-			if timer["name"] == name:
-				timers.append(timer)
-		# return any timers that were identified.
-		if len(timers) > 0:
-		    return timers
+        # Go through a hierarchy of methods until a match is found
+        
+        # Referenced by name and optionally by stage
+        # Note that a preset timer might have multiple stages, so it only a name
+        #  is provided, multiple timers may be returned.
+        timers = []
+        for timer in self.active_timers:
+            if stage:
+                if timer["name"] == name and timer["stage"] == stage:
+                    return [timer]
+            if timer["name"] == name:
+                timers.append(timer)
+        # return any timers that were identified.
+        if len(timers) > 0:
+            return timers
 
         # Referenced it by duration? "the 5 minute timer"
         secs = self._extract_duration(name)
@@ -471,10 +471,10 @@ class TimerSkill(MycroftSkill):
 
             timers = self._get_timer(which)
             if timers:
-				for timer in timers:
-					self.cancel_timer(timer)
-					duration = nice_duration(timer["duration"])
-					self.speak_dialog("cancelled.single.timer",
+                for timer in timers:
+                    self.cancel_timer(timer)
+                    duration = nice_duration(timer["duration"])
+                    self.speak_dialog("cancelled.single.timer",
                                   data={"name": timer["name"],
                                         "duration": duration})
 
@@ -491,10 +491,10 @@ class TimerSkill(MycroftSkill):
 
         # Just speak status of given timer
         timers = self._get_timer(timer_name, stage_name)
-		if len(timers) > 1:
-			self.speak("there are " + len(timers) + "matching timers")
-		for timer in timers:
-			self._speak_timer(timer)
+        if len(timers) > 1:
+            self.speak("there are " + len(timers) + "matching timers")
+        for timer in timers:
+            self._speak_timer(timer)
 
     def _speak_timer(self, timer):
         if timer is None:
